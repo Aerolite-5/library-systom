@@ -1,39 +1,44 @@
+#pragma execution_character_set("utf-8")
 #include "Book.h"
 
-Book::Book(std::string id, std::string name)
+#include <iostream>
+
+Book::Book(const std::string& id, const std::string& name,
+           int stock, const std::string& author)
+    : Resource(id, name), stock(stock > 0 ? stock : 0), author(author)
 {
-    this->id = id;
-    this->name = name;
-    isBorrowed = false;
 }
 
-std::string Book::GetId() const
+int Book::GetStock() const
 {
-    return id;
+    return stock;
 }
 
-std::string Book::GetName() const
+std::string Book::Type() const
 {
-    return name;
+    return "图书";
 }
 
-bool Book::IsBorrowed() const
+bool Book::CanBorrow() const
 {
-    return isBorrowed;
+    return stock > 0;
 }
 
-bool Book::Borrow()
+void Book::OnBorrow()
 {
-    if (isBorrowed)
-        return false;
-    isBorrowed = true;
-    return true;
+    if (stock > 0)
+        --stock;
 }
 
-bool Book::Return()
+void Book::OnReturn()
 {
-    if (!isBorrowed)
-        return false;
-    isBorrowed = false;
-    return true;
+    ++stock;
+}
+
+void Book::Show() const
+{
+    std::cout << "[图书] 编号:" << id
+              << " 书名:" << name
+              << " 库存:" << stock
+              << " 作者:" << author << "\n";
 }

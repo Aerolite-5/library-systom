@@ -1,22 +1,21 @@
-#ifndef BOOK_H
-#define BOOK_H
-#include <string>
+#pragma once
+#include "Resource.h"
 
-class Book
+// 纸质图书：有库存，借出减 1，归还加 1。
+class Book : public Resource
 {
-private:
-    std::string id;     
-    std::string name;   
-    bool isBorrowed;    
+    int stock;
+    std::string author;
+
 public:
-    Book(std::string id, std::string name);
+    Book(const std::string& id, const std::string& name,
+         int stock, const std::string& author);
 
-    std::string GetId() const;
-    std::string GetName() const;
-    bool IsBorrowed() const;
+    int GetStock() const;
 
-    bool Borrow();  
-    bool Return();  
+    std::string Type() const override;
+    bool CanBorrow() const override;
+    void OnBorrow() override;
+    void OnReturn() override;
+    void Show() const override;
 };
-
-#endif
