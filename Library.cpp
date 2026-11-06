@@ -2,21 +2,27 @@
 #include "Library.h"
 
 #include "Book.h"
-#include "EBook.h"
+#include "ES.h"
+#include "Magazine.h"
+#include "Student.h"
+#include "Teacher.h"
 
 #include <iostream>
 
 Library::Library()
 {
-    readers.push_back(Reader("S001", "张三", "学生"));
-    readers.push_back(Reader("S002", "李四", "学生"));
-    readers.push_back(Reader("T001", "王老师", "教师"));
+    readers.push_back(new Student("5120250001", "胡鑫", "计算机学院"));
+    readers.push_back(new Student("5120250002", "高斌", "文学院"));
+    readers.push_back(new Student("5120256423", "张想", "历史学院"));
+    readers.push_back(new Teacher("T2025001", "李文", "计算机学院", "副教授"));
 }
 
 Library::~Library()
 {
     for (std::size_t i = 0; i < resources.size(); ++i)
         delete resources[i];
+    for (std::size_t i = 0; i < readers.size(); ++i)
+        delete readers[i];
 }
 
 Resource* Library::FindResource(const std::string& id)
@@ -33,8 +39,8 @@ Reader* Library::FindReader(const std::string& id)
 {
     for (std::size_t i = 0; i < readers.size(); ++i)
     {
-        if (readers[i].GetId() == id)
-            return &readers[i];
+        if (readers[i]->GetId() == id)
+            return readers[i];
     }
     return nullptr;
 }
@@ -50,28 +56,42 @@ int Library::CountActiveLoans(const std::string& readerId) const
     return count;
 }
 
-bool Library::AddBook(const std::string& id, const std::string& name,
-                      int stock, const std::string& author)
+bool Library::AddBook(const std::string& id, const std::string& name, int stock,
+                      const std::string& author, const std::string& publisher)
 {
     if (FindResource(id) != nullptr || stock <= 0)
     {
         std::cout << "编号重复或库存无效。\n";
         return false;
     }
-    resources.push_back(new Book(id, name, stock, author));
+    resources.push_back(new Book(id, name, stock, author, publisher));
     std::cout << "添加图书成功。\n";
     return true;
 }
 
-bool Library::AddEBook(const std::string& id, const std::string& name, double sizeMB)
+bool Library::AddMagazine(const std::string& id, const std::string& name, int stock,
+                          const std::string& issue)
+{
+    if (FindResource(id) != nullptr || stock <= 0)
+    {
+        std::cout << "编号重复或库存无效。\n";
+        return false;
+    }
+    resources.push_back(new Magazine(id, name, stock, issue));
+    std::cout << "添加杂志成功。\n";
+    return true;
+}
+
+bool Library::AddES(const std::string& id, const std::string& name,
+                    const std::string& format, double sizeMB)
 {
     if (FindResource(id) != nullptr)
     {
         std::cout << "编号重复。\n";
         return false;
     }
-    resources.push_back(new EBook(id, name, sizeMB));
-    std::cout << "添加电子书成功。\n";
+    resources.push_back(new ES(id, name, format, sizeMB));
+    std::cout << "添加电子资源成功。\n";
     return true;
 }
 
@@ -109,12 +129,9 @@ bool Library::Borrow(const std::string& resourceId, const std::string& readerId)
 
     resource->OnBorrow();
     records.push_back(BorrowRecord(resource->GetId(), resource->GetName(),
-                                   reader->GetId(), reader->GetName()));
-
-    if (dynamic_cast<EBook*>(resource) != nullptr)
-        std::cout << "借阅成功，电子书可以多人同时借阅。\n";
-    else
-        std::cout << "借阅成功。\n";
+                                   resource->Type(), reader->GetId(),
+                                   reader->GetName()));
+    std::cout << resource->BorrowMessage() << "\n";
     return true;
 }
 
@@ -146,6 +163,23 @@ bool Library::Return(const std::string& resourceId, const std::string& readerId)
     return false;
 }
 
+bool Library::AddStock(const std::string& resourceId, int count)
+{
+    Resource* resource = FindResource(resourceId);
+    if (resource == nullptr)
+    {
+        std::cout << "未找到资源。\n";
+        return false;
+    }
+    if (!resource->AddStock(count))
+    {
+        std::cout << "该资源不支持库存操作，或数量无效。\n";
+        return false;
+    }
+    std::cout << "库存已增加。\n";
+    return true;
+}
+
 void Library::ShowResources() const
 {
     if (resources.empty())
@@ -160,7 +194,7 @@ void Library::ShowResources() const
 void Library::ShowReaders() const
 {
     for (std::size_t i = 0; i < readers.size(); ++i)
-        readers[i].Show();
+        readers[i]->Show();
 }
 
 void Library::ShowRecords() const
@@ -172,4 +206,18 @@ void Library::ShowRecords() const
     }
     for (std::size_t i = 0; i < records.size(); ++i)
         records[i].Show();
+}
+
+std::vector<Resource*> Library::Search(const std::string& keyword) const
+{
+    std::vector<Resource*> result;
+    for (std::size_t i = 0; i < resources.size(); ++i)
+    {
+        if (resources[i]->GetId().find(keyword) != std::string::npos
+            || resources[i]->GetName().find(keyword) != std::string::npos)
+        {
+            result.push_back(resources[i]);
+        }
+    }
+    return result;
 }

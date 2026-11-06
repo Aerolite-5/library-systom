@@ -5,10 +5,12 @@
 
 BorrowRecord::BorrowRecord(const std::string& resourceId,
                            const std::string& resourceName,
+                           const std::string& resourceType,
                            const std::string& readerId,
                            const std::string& readerName)
     : resourceId(resourceId), resourceName(resourceName),
-      readerId(readerId), readerName(readerName), returned(false)
+      resourceType(resourceType), readerId(readerId),
+      readerName(readerName), returned(false)
 {
 }
 
@@ -35,6 +37,7 @@ void BorrowRecord::MarkReturned()
 void BorrowRecord::Show() const
 {
     std::cout << "资源:" << resourceId << "《" << resourceName << "》"
+              << " 类型:" << resourceType
               << " 读者:" << readerId << " " << readerName
               << " 状态:" << (returned ? "已归还" : "借阅中") << "\n";
 }

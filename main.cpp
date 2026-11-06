@@ -44,21 +44,36 @@ double ReadDouble(const std::string& prompt)
     }
 }
 
-void AddBookFlow(Library& library)
+void AddResourceFlow(Library& library)
 {
-    const std::string id = ReadText("图书编号：");
-    const std::string name = ReadText("书名：");
-    const int stock = ReadInt("库存：");
-    const std::string author = ReadText("作者：");
-    library.AddBook(id, name, stock, author);
-}
-
-void AddEBookFlow(Library& library)
-{
-    const std::string id = ReadText("电子书编号：");
+    std::cout << "\n资源类型：1-图书  2-杂志  3-电子资源\n";
+    const int type = ReadInt("类型：");
+    const std::string id = ReadText("编号：");
     const std::string name = ReadText("名称：");
-    const double size = ReadDouble("大小(MB)：");
-    library.AddEBook(id, name, size);
+
+    if (type == 1)
+    {
+        const int stock = ReadInt("库存：");
+        const std::string author = ReadText("作者：");
+        const std::string publisher = ReadText("出版社：");
+        library.AddBook(id, name, stock, author, publisher);
+    }
+    else if (type == 2)
+    {
+        const int stock = ReadInt("库存：");
+        const std::string issue = ReadText("期号：");
+        library.AddMagazine(id, name, stock, issue);
+    }
+    else if (type == 3)
+    {
+        const std::string format = ReadText("格式：");
+        const double size = ReadDouble("大小(MB)：");
+        library.AddES(id, name, format, size);
+    }
+    else
+    {
+        std::cout << "资源类型无效。\n";
+    }
 }
 
 void BorrowFlow(Library& library)
@@ -70,6 +85,26 @@ void BorrowFlow(Library& library)
     const std::string resourceId = ReadText("资源编号：");
     const std::string readerId = ReadText("读者编号：");
     library.Borrow(resourceId, readerId);
+}
+
+void AddStockFlow(Library& library)
+{
+    const std::string resourceId = ReadText("资源编号：");
+    const int count = ReadInt("增加数量：");
+    library.AddStock(resourceId, count);
+}
+
+void SearchFlow(Library& library)
+{
+    const std::string keyword = ReadText("关键字（编号/名称）：");
+    const std::vector<Resource*> result = library.Search(keyword);
+    if (result.empty())
+    {
+        std::cout << "没有找到匹配的资源。\n";
+        return;
+    }
+    for (std::size_t i = 0; i < result.size(); ++i)
+        result[i]->Show();
 }
 
 void ReturnFlow(Library& library)
@@ -90,24 +125,25 @@ int main()
     Library library;
     while (true)
     {
-        std::cout << "\n===== 图书借阅管理（实验三）=====\n"
-                  << "1. 添加图书\n"
-                  << "2. 添加电子书\n"
+        std::cout << "\n===== 图书借阅管理 =====\n"
+                  << "1. 添加资源\n"
+                  << "2. 增加库存\n"
                   << "3. 借书\n"
                   << "4. 还书\n"
                   << "5. 查看资源\n"
-                  << "6. 查看借阅记录\n"
+                  << "6. 查询资源\n"
+                  << "7. 查看读者\n"
+                  << "8. 查看借阅记录\n"
                   << "0. 退出\n"
                   << "请选择：";
-
         const int choice = ReadInt("");
         if (std::cin.eof() || choice == 0)
             break;
 
         if (choice == 1)
-            AddBookFlow(library);
+            AddResourceFlow(library);
         else if (choice == 2)
-            AddEBookFlow(library);
+            AddStockFlow(library);
         else if (choice == 3)
             BorrowFlow(library);
         else if (choice == 4)
@@ -115,6 +151,10 @@ int main()
         else if (choice == 5)
             library.ShowResources();
         else if (choice == 6)
+            SearchFlow(library);
+        else if (choice == 7)
+            library.ShowReaders();
+        else if (choice == 8)
             library.ShowRecords();
         else
             std::cout << "没有该选项。\n";

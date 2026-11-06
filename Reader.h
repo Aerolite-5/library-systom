@@ -2,21 +2,22 @@
 #include <iostream>
 #include <string>
 
-// 读者暂不派生，只保留一个类，便于把实验三重点放在资源继承上。
+// 实验四：读者也做成抽象基类，学生和教师通过派生类实现不同借阅规则。
 class Reader
 {
+protected:
     std::string id;
     std::string name;
-    std::string role;
-    int maxBorrow;
 
 public:
-    Reader(const std::string& id, const std::string& name,
-           const std::string& role);
+    Reader(const std::string& id, const std::string& name);
+    virtual ~Reader() = default;
 
     std::string GetId() const;
     std::string GetName() const;
-    int GetMaxBorrow() const;
 
-    void Show() const;
+    virtual std::string Type() const = 0;
+    virtual int GetMaxBorrow() const = 0;
+    virtual int GetLoanDays() const = 0;
+    virtual void Show() const = 0;
 };

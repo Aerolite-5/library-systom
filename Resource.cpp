@@ -15,3 +15,8 @@ std::string Resource::GetName() const
 {
     return name;
 }
+
+bool Resource::AddStock(int)
+{
+    return false;
+}

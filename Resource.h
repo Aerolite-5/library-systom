@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-// 资源基类：Book 和 EBook 继承它并实现虚函数。
+// 实验四：资源基类，用虚函数统一管理不同资源。
 class Resource
 {
 protected:
@@ -17,8 +17,11 @@ public:
     std::string GetName() const;
 
     virtual std::string Type() const = 0;
+    virtual bool IsDigital() const = 0;
     virtual bool CanBorrow() const = 0;
     virtual void OnBorrow() = 0;
     virtual void OnReturn() = 0;
+    virtual bool AddStock(int count);
+    virtual std::string BorrowMessage() const = 0;
     virtual void Show() const = 0;
 };
