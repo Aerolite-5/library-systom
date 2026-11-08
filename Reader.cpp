@@ -15,3 +15,9 @@ std::string Reader::GetName() const
 {
     return name;
 }
+
+std::ostream& operator<<(std::ostream& os, const Reader& reader)
+{
+    reader.Show(os);
+    return os;
+}

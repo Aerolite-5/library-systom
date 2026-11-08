@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 
-// 实验四：读者也做成抽象基类，学生和教师通过派生类实现不同借阅规则。
+// 读者抽象基类：借阅上限和借期由具体读者类型决定。
 class Reader
 {
 protected:
@@ -17,7 +17,9 @@ public:
     std::string GetName() const;
 
     virtual std::string Type() const = 0;
-    virtual int GetMaxBorrow() const = 0;
+    virtual int GetMaxBorrowCount() const = 0;
     virtual int GetLoanDays() const = 0;
-    virtual void Show() const = 0;
+    virtual void Show(std::ostream& os) const = 0;
 };
+
+std::ostream& operator<<(std::ostream& os, const Reader& reader);

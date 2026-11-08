@@ -1,41 +1,24 @@
 #pragma once
-#include <string>
-#include <vector>
+#include "FineService.h"
+#include "LoanService.h"
+#include "ReaderRegistry.h"
+#include "ResourceCatalog.h"
 
-#include "BorrowRecord.h"
-#include "Reader.h"
-#include "Resource.h"
-
+// Library 只作为组合根，把资源、读者、借阅、罚款四个职责组织起来。
 class Library
 {
-    std::vector<Resource*> resources;
-    std::vector<Reader*> readers;
-    std::vector<BorrowRecord> records;
-
-    Resource* FindResource(const std::string& id);
-    Reader* FindReader(const std::string& id);
-    int CountActiveLoans(const std::string& readerId) const;
+    ResourceCatalog resourceCatalog;
+    ReaderRegistry readerRegistry;
+    LoanService loanService;
+    FineService fineService;
 
 public:
     Library();
-    ~Library();
 
-    Library(const Library&) = delete;
-    Library& operator=(const Library&) = delete;
+    ResourceCatalog& Resources();
+    ReaderRegistry& Readers();
+    LoanService& Loans();
+    FineService& Fines();
 
-    bool AddBook(const std::string& id, const std::string& name, int stock,
-                 const std::string& author, const std::string& publisher);
-    bool AddMagazine(const std::string& id, const std::string& name, int stock,
-                     const std::string& issue);
-    bool AddES(const std::string& id, const std::string& name,
-               const std::string& format, double sizeMB);
-
-    bool Borrow(const std::string& resourceId, const std::string& readerId);
-    bool Return(const std::string& resourceId, const std::string& readerId);
-    bool AddStock(const std::string& resourceId, int count);
-
-    void ShowResources() const;
-    void ShowReaders() const;
-    void ShowRecords() const;
-    std::vector<Resource*> Search(const std::string& keyword) const;
+    void ShowStatistics() const;
 };

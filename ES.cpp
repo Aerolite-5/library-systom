@@ -2,12 +2,25 @@
 #include "ES.h"
 
 #include <iomanip>
-#include <iostream>
+#include <sstream>
 
 ES::ES(const std::string& id, const std::string& name,
-       const std::string& format, double sizeMB)
-    : Resource(id, name), format(format), sizeMB(sizeMB > 0.0 ? sizeMB : 0.0)
+       const std::string& category, const std::string& format,
+       double sizeMB)
+    : Resource(id, name, category),
+      format(format),
+      sizeMB(sizeMB > 0.0 ? sizeMB : 0.0)
 {
+}
+
+std::string ES::GetFormat() const
+{
+    return format;
+}
+
+double ES::GetSizeMB() const
+{
+    return sizeMB;
 }
 
 std::string ES::Type() const
@@ -20,28 +33,30 @@ bool ES::IsDigital() const
     return true;
 }
 
-bool ES::CanBorrow() const
+bool ES::CanBorrow(std::string& reason) const
 {
+    reason.clear();
     return true;
 }
 
-void ES::OnBorrow()
+bool ES::OnBorrow()
 {
+    return true;
 }
 
 void ES::OnReturn()
 {
 }
 
-std::string ES::BorrowMessage() const
+void ES::Show(std::ostream& os) const
 {
-    return "借阅成功，电子资源可以多人同时借阅。";
-}
+    std::ostringstream sizeText;
+    sizeText << std::fixed << std::setprecision(1) << sizeMB;
 
-void ES::Show() const
-{
-    std::cout << "[电子资源] 编号:" << id << " 名称:" << name
-              << " 格式:" << format
-              << " 大小:" << std::fixed << std::setprecision(1) << sizeMB
-              << "MB 可多人同时借阅\n";
+    os << "[" << Type() << "] 编号:" << GetId()
+       << " 名称:" << GetName()
+       << " 分类:" << GetCategory()
+       << " 格式:" << format
+       << " 大小:" << sizeText.str() << "MB"
+       << " 可多人同时借阅";
 }

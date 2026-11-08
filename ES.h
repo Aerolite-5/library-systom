@@ -1,7 +1,7 @@
 #pragma once
 #include "Resource.h"
 
-// 电子资源：无库存，可多人同时借阅。
+// 电子书没有库存限制，可以多人同时借阅。
 class ES : public Resource
 {
     std::string format;
@@ -9,13 +9,17 @@ class ES : public Resource
 
 public:
     ES(const std::string& id, const std::string& name,
-       const std::string& format, double sizeMB);
+       const std::string& category, const std::string& format,
+       double sizeMB);
 
+    std::string GetFormat() const;
+    double GetSizeMB() const;
     std::string Type() const override;
+
     bool IsDigital() const override;
-    bool CanBorrow() const override;
-    void OnBorrow() override;
+    bool CanBorrow(std::string& reason) const override;
+    bool OnBorrow() override;
     void OnReturn() override;
-    std::string BorrowMessage() const override;
-    void Show() const override;
+
+    void Show(std::ostream& os) const override;
 };
